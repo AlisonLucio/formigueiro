@@ -2,9 +2,10 @@ from airflow import DAG
 from datetime import datetime
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
-from helpers.apis.api_compras import call_api_gov
+from helpers.apis.dicts.api_compras import CALL_API_GOV, TABLE_NAME_LIST
+# from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 
-dag_conf= call_api_gov['DAG_CONFIG']
+dag_conf= CALL_API_GOV['DAG_CONFIG']
 
 dag = DAG(
     dag_id=dag_conf['DAG_ID'],
@@ -16,18 +17,33 @@ dag = DAG(
 dag_init = DummyOperator(task_id = 'dag_init', dag=dag)
 dag_end = DummyOperator(task_id= 'dag_end', dag=dag)
 
-task_config_list= call_api_gov['TASK_CONFIG']['TASK_LIST']
+for table_name in TABLE_NAME_LIST:
 
-for task_index in task_config_list:
+    task_config_list= CALL_API_GOV['TASK_CONFIG']['PIPELINES_TABLES'][table_name]
 
-    call_function = SimpleHttpOperator(
-        task_id= task_index['task_id'],
-        method= task_index['method'],
-        http_conn_id= task_index['http_conn_id'],
-        endpoint= task_index['endpoint'],
-        data= (task_index['data']),
-        headers= task_index['headers'],
+    extration_api = SimpleHttpOperator(
+        task_id= f"{task_config_list['CLOUD_FUNCTION']['task_id']}_{table_name}",
+        method= task_config_list['CLOUD_FUNCTION']['method'],
+        http_conn_id= task_config_list['CLOUD_FUNCTION']['http_conn_id'],
+        endpoint= task_config_list['CLOUD_FUNCTION']['endpoint'],
+        data= (task_config_list['CLOUD_FUNCTION']['data']),
+        headers= task_config_list['CLOUD_FUNCTION']['headers'],
         dag=dag
     )
 
-    dag_init >> call_function >> dag_end
+    # insert_query_job = BigQueryInsertJobOperator(
+    #     task_id=f"{task_config_list['CLOUD_FUNCTION']['task_id']}_{table_name}",
+    #     configuration={
+    #         "query": {
+    #             "query": INSERT_ROWS_QUERY,
+    #             "useLegacySql": False,
+    #         }
+    #     },
+    #     location=LOCATION,
+    #     deferrable=True,
+    # )
+
+
+    dag_init >> extration_api >> dag_end
+
+
