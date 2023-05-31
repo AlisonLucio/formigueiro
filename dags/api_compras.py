@@ -54,15 +54,6 @@ with DAG(
 
         with TaskGroup(group_id=f'incoming_to_raw_{table_name}') as task_group:
 
-            # task_delete_file_incoming_to_raw = GoogleCloudStorageDeleteOperator(
-            #     task_id=f'delete_file_raw-{table_name}',
-            #     bucket_name=task_config_list['DELETE_FILE']['RAW']['bucket_name'], 
-            #     prefix = task_config_list['DELETE_FILE']['RAW']['prefix'],
-            #     gcp_conn_id = task_config_list['DELETE_FILE']['RAW']['gcp_conn_id'],
-            #     impersonation_chain = task_config_list['DELETE_FILE']['RAW']['impersonation_chain'],
-            #     dag=dag
-            # )
-
             create_cluster_incoming_to_raw = DataprocCreateClusterOperator(
                 task_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['task_id'],
                 project_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['project_id'],
@@ -89,14 +80,6 @@ with DAG(
             )   
 
         with TaskGroup(group_id=f'raw_to_trusted_{table_name}') as task_group:
-            # task_delete_file_raw_to_trusted = GoogleCloudStorageDeleteOperator(
-            #     task_id=f'delete_file_trusted-{table_name}',
-            #     bucket_name=task_config_list['DELETE_FILE']['TRUSTED']['bucket_name'], 
-            #     prefix = task_config_list['DELETE_FILE']['TRUSTED']['prefix'],
-            #     gcp_conn_id = task_config_list['DELETE_FILE']['TRUSTED']['gcp_conn_id'],
-            #     impersonation_chain = task_config_list['DELETE_FILE']['TRUSTED']['impersonation_chain'],
-            #     dag=dag
-            # )
 
             create_cluster_raw_to_trusted = DataprocCreateClusterOperator(
                 task_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['task_id'],
@@ -147,12 +130,6 @@ with DAG(
                 dag=dag
             )
 
-        # dag_init >> \
-        # task_delete_file_incoming >> task_extration_api_to_incoming >> \
-        # task_delete_file_incoming_to_raw >> create_cluster_incoming_to_raw >> submit_job_spark_incoming_to_raw >> delete_cluster_incoming_to_raw >> \
-        # task_delete_file_raw_to_trusted >> create_cluster_raw_to_trusted >> submit_job_spark_raw_to_trusted >> delete_cluster_raw_to_trusted >>\
-        # task_trusted_to_bigquery >> \
-        # dag_end
 
         dag_init >> \
         task_delete_file_incoming >> task_extration_api_to_incoming >> \

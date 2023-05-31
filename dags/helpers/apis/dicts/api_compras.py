@@ -93,18 +93,6 @@ CALL_API_GOV = {
                         'gcp_conn_id':GCP_CONN_ID,
                         'impersonation_chain':SERVICE_ACCOUNT
                     },
-                #     'RAW':{
-                #         'bucket_name':PROJECT_ID,
-                #         'prefix':PATH_SAVE_FILE_API_SERVICOS_ORGAOS_RAW,
-                #         'gcp_conn_id':GCP_CONN_ID,
-                #         'impersonation_chain':SERVICE_ACCOUNT
-                #     },
-                #     'TRUSTED':{
-                #         'bucket_name':PROJECT_ID,
-                #         'prefix':PATH_SAVE_FILE_API_SERVICOS_ORGAOS_TRUSTED,
-                #         'gcp_conn_id':GCP_CONN_ID,
-                #         'impersonation_chain':SERVICE_ACCOUNT
-                #     },
                 },
                 'DATAPROC_CONFIG':{
                     'INCOMING_TO_RAW':{
@@ -199,18 +187,6 @@ CALL_API_GOV = {
                         'gcp_conn_id':GCP_CONN_ID,
                         'impersonation_chain':SERVICE_ACCOUNT
                     },
-                #     'RAW':{
-                #         'bucket_name':PROJECT_ID,
-                #         'prefix':PATH_SAVE_FILE_API_FORNECEDORES_RAW,
-                #         'gcp_conn_id':GCP_CONN_ID,
-                #         'impersonation_chain':SERVICE_ACCOUNT
-                #     },
-                #     'TRUSTED':{
-                #         'bucket_name':PROJECT_ID,
-                #         'prefix':PATH_SAVE_FILE_API_FORNECEDORES_TRUSTED,
-                #         'gcp_conn_id':GCP_CONN_ID,
-                #         'impersonation_chain':SERVICE_ACCOUNT
-                #     },
                 },
                 'DATAPROC_CONFIG':{
                     'INCOMING_TO_RAW':{
@@ -305,18 +281,6 @@ CALL_API_GOV = {
                         'gcp_conn_id':GCP_CONN_ID,
                         'impersonation_chain':SERVICE_ACCOUNT
                     },
-                #     'RAW':{
-                #         'bucket_name':PROJECT_ID,
-                #         'prefix':PATH_SAVE_FILE_API_FORNECEDORES_RAW,
-                #         'gcp_conn_id':GCP_CONN_ID,
-                #         'impersonation_chain':SERVICE_ACCOUNT
-                #     },
-                #     'TRUSTED':{
-                #         'bucket_name':PROJECT_ID,
-                #         'prefix':PATH_SAVE_FILE_API_FORNECEDORES_TRUSTED,
-                #         'gcp_conn_id':GCP_CONN_ID,
-                #         'impersonation_chain':SERVICE_ACCOUNT
-                #     },
                 },
                 'DATAPROC_CONFIG':{
                     'INCOMING_TO_RAW':{
