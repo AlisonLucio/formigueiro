@@ -24,8 +24,6 @@ with DAG(
     schedule_interval=dag_conf['SCHEDULE_INTERVAL'],
     catchup=dag_conf['CATCHUP'],
     tags=dag_conf['TAGS'],
-    # depends_on_past=True,
-    # wait_for_downstream=True,
     ) as dag:
 
 
@@ -67,7 +65,6 @@ with DAG(
                 cluster_config=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['cluster_config'],
                 region=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['region'],
                 cluster_name= task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['cluster_name'],
-                # request_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['task_id'],
                 use_if_exists=False,
                 dag=dag
             )
@@ -77,7 +74,6 @@ with DAG(
                 job=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['SUBMIT_JOB_SPARK']['job'],
                 region=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['SUBMIT_JOB_SPARK']['region'], 
                 project_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['SUBMIT_JOB_SPARK']['project_id'],
-                # request_id=f'{task_config_list["DATAPROC_CONFIG"]["INCOMING_TO_RAW"]["SUBMIT_JOB_SPARK"]["task_id"]}',
                 dag=dag
             )
 
@@ -86,7 +82,6 @@ with DAG(
             project_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['DELETE_CLUSTER']['project_id'],
             cluster_name=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['DELETE_CLUSTER']['cluster_name'],
             region=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['DELETE_CLUSTER']['region'],
-            # request_id=f'{task_config_list["DATAPROC_CONFIG"]["INCOMING_TO_RAW"]["DELETE_CLUSTER"]["task_id"]}',
             dag=dag
             )   
 
@@ -97,7 +92,6 @@ with DAG(
                 project_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['project_id'],
                 cluster_config=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['cluster_config'],
                 region=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['region'],
-                # request_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["CREATE_CLUSTER"]["task_id"]}',
                 cluster_name= task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['cluster_name'],
                 use_if_exists=False,
                 dag=dag
@@ -108,7 +102,6 @@ with DAG(
                 job=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['SUBMIT_JOB_SPARK']['job'],
                 region=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['SUBMIT_JOB_SPARK']['region'], 
                 project_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['SUBMIT_JOB_SPARK']['project_id'],
-                # request_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["SUBMIT_JOB_SPARK"]["task_id"]}',
                 dag=dag
             )
 
@@ -117,7 +110,6 @@ with DAG(
             project_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['project_id'],
             cluster_name=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['cluster_name'],
             region=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['region'],
-            # request_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["DELETE_CLUSTER"]["task_id"]}',
             dag=dag
             )   
 
