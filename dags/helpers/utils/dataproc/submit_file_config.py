@@ -1,5 +1,4 @@
 from pyspark.sql import SparkSession
-# from pyspark.sql.functions import *
 import unicodedata
 import sys 
 import pandas as pd
@@ -52,6 +51,7 @@ def func_run():
 
         df = spark.read.options(header='True', delimiter=",", inferSchema='False', encoding='UTF-8').csv(GCS_DATA_SOURCE_PATH)
         df_incoming_hash = df.withColumn("checksum", F.xxhash64(*df.schema.names))
+        
         df_incoming_hash.write.mode("overwrite").options(header="True", inferSchema="False", delimiter=",").csv(GCP_DATA_OUTPUT_PATH)
 
         print_info(df_incoming_hash)

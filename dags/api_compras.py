@@ -137,10 +137,8 @@ with DAG(
                 dag=dag
             )
 
-
         dag_init >> \
-        task_delete_file_incoming >> task_extration_api_to_incoming >> \
-        create_cluster_incoming_to_raw >> submit_job_spark_incoming_to_raw >> delete_cluster_incoming_to_raw >> \
-        create_cluster_raw_to_trusted >> submit_job_spark_raw_to_trusted >> delete_cluster_raw_to_trusted >>\
-        task_trusted_to_bigquery >> \
+        task_delete_file_incoming >> task_extration_api_to_incoming >> create_cluster_incoming_to_raw >> \
+        submit_job_spark_incoming_to_raw >> delete_cluster_incoming_to_raw >> create_cluster_raw_to_trusted >> \
+        submit_job_spark_raw_to_trusted >> delete_cluster_raw_to_trusted >> task_trusted_to_bigquery >> \
         dag_end
