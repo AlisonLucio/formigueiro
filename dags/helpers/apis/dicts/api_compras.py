@@ -6,6 +6,7 @@ from helpers.utils.dataproc.dataproc_config import (
     )
 from helpers.utils.general_config import change_file_path, get_cluster_name
 
+
 # constantes de uso geral
 
 PROJECT_ID="video-aulas-ed"
@@ -17,7 +18,7 @@ SERVICE_ACCOUNT=Variable.get('SERVICE_ACCOUNT')
 GCP_CONN_ID= 'gcp_conn_id'
 GOOGLE_CLOUD_DEFAULT='google_cloud_default'
 PYSPARK_FILE='gs://video-aulas-ed/script_submit_spark/layer_incoming/source_type_api/api_fornecedores/submit_file_config.py'
-DEFAULT_RETRY=2
+DEFAULT_RETRY=4
 # ----------------------------------------------------------------------------
 
 # constantes com os nomes das tabelas
@@ -32,14 +33,14 @@ PATH_SAVE_FILE_API_SERVICOS_ORGAOS_RAW=change_file_path(change_layer=DATASET_ID_
 PATH_SAVE_FILE_API_SERVICOS_ORGAOS_TRUSTED=change_file_path(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
 
 # constantes com endereços utilizados para a tabela api_orgaos
-PATH_SAVE_FILE_API_ORGAOS_INCOMING=change_file_path(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
-PATH_SAVE_FILE_API_ORGAOS_RAW=change_file_path(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
-PATH_SAVE_FILE_API_ORGAOS_TRUSTED=change_file_path(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
+PATH_SAVE_FILE_API_ORGAOS_INCOMING=change_file_path(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_ORGAOS, change_file_extension="csv")
+PATH_SAVE_FILE_API_ORGAOS_RAW=change_file_path(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_ORGAOS, change_file_extension="csv")
+PATH_SAVE_FILE_API_ORGAOS_TRUSTED=change_file_path(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_ORGAOS, change_file_extension="csv")
 
 # constantes com endereços utilizados para a tabela api_fornecedores
-PATH_SAVE_FILE_API_FORNECEDORES_INCOMING=change_file_path(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
-PATH_SAVE_FILE_API_FORNECEDORES_RAW=change_file_path(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
-PATH_SAVE_FILE_API_FORNECEDORES_TRUSTED=change_file_path(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
+PATH_SAVE_FILE_API_FORNECEDORES_INCOMING=change_file_path(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_FORNECEDORES, change_file_extension="csv")
+PATH_SAVE_FILE_API_FORNECEDORES_RAW=change_file_path(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_FORNECEDORES, change_file_extension="csv")
+PATH_SAVE_FILE_API_FORNECEDORES_TRUSTED=change_file_path(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_FORNECEDORES, change_file_extension="csv")
 
 # constantes com URIs de cada api
 URI_API_SERVICOS_ORGAOS = 'http://compras.dados.gov.br/servicos/v1/servicos.csv'
@@ -60,14 +61,15 @@ CALL_API_GOV = {
         "PROJECT_ID":PROJECT_ID,
         "DEFAULT_ARGS":{
             'owner':'Alison',
-            'start_date':datetime(2023, 5, 1),
-            'retries': 3,
-            'retry_delay': timedelta(seconds=60),
-            'depends_on_past': False # mudar isso quando tudo estiver rodando ok
+            'start_date':datetime(2023, 5, 28),
+            'retries': 4,
+            'retry_delay': timedelta(seconds=120),
+            'wait_for_downstream': True,
+            'depends_on_past': True, # mudar isso quando tudo estiver rodando ok
         },
         'SCHEDULE_INTERVAL':'@daily',
-        'CATCHUP':False, # mudar isso quando tudo estiver rodando ok
-        'TAGS':['cloud-function', 'bigquery']
+        'CATCHUP':True, # mudar isso quando tudo estiver rodando ok
+        'TAGS':['api_gov', 'cloud-function', 'dataproc', 'bigquery']
     },
     "TASK_CONFIG":{
         "ZONE":LOCATION,
@@ -97,7 +99,7 @@ CALL_API_GOV = {
                 'DATAPROC_CONFIG':{
                     'INCOMING_TO_RAW':{
                         'CREATE_CLUSTER':{
-                            'task_id':f'incoming_create_cluster_{API_SERVICOS_ORGAOS}',
+                            'task_id':f'create_cluster_{API_SERVICOS_ORGAOS}',
                             'project_id':PROJECT_ID,
                             'cluster_config': get_cluster_config(),
                             'region':LOCATION,

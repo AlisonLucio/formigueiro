@@ -12,6 +12,9 @@ from airflow.providers.google.cloud.operators.dataproc import (
     DataprocSubmitJobOperator
     )
 from airflow.utils.task_group import TaskGroup
+from random import seed, randint
+
+seed(2)
 
 dag_conf= CALL_API_GOV['DAG_CONFIG']
 
@@ -20,7 +23,9 @@ with DAG(
     default_args=dag_conf['DEFAULT_ARGS'],
     schedule_interval=dag_conf['SCHEDULE_INTERVAL'],
     catchup=dag_conf['CATCHUP'],
-    tags=dag_conf['TAGS']
+    tags=dag_conf['TAGS'],
+    # depends_on_past=True,
+    # wait_for_downstream=True,
     ) as dag:
 
 
@@ -31,6 +36,8 @@ with DAG(
     for table_name in TABLE_NAME_LIST:
 
         task_config_list= CALL_API_GOV['TASK_CONFIG']['PIPELINES_TABLES'][table_name]
+
+        aleatorio = randint(0, 15)
 
         with TaskGroup(group_id=f'extration_api_{table_name}') as task_group:
             task_delete_file_incoming = GoogleCloudStorageDeleteOperator(
@@ -55,54 +62,62 @@ with DAG(
         with TaskGroup(group_id=f'incoming_to_raw_{table_name}') as task_group:
 
             create_cluster_incoming_to_raw = DataprocCreateClusterOperator(
-                task_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['task_id'],
+                task_id=f"{task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['task_id']}",
                 project_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['project_id'],
                 cluster_config=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['cluster_config'],
                 region=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['region'],
                 cluster_name= task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['cluster_name'],
+                # request_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['CREATE_CLUSTER']['task_id'],
+                use_if_exists=False,
                 dag=dag
             )
 
             submit_job_spark_incoming_to_raw = DataprocSubmitJobOperator(
-                task_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['SUBMIT_JOB_SPARK']['task_id'], 
+                task_id=f'{task_config_list["DATAPROC_CONFIG"]["INCOMING_TO_RAW"]["SUBMIT_JOB_SPARK"]["task_id"]}', 
                 job=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['SUBMIT_JOB_SPARK']['job'],
                 region=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['SUBMIT_JOB_SPARK']['region'], 
                 project_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['SUBMIT_JOB_SPARK']['project_id'],
+                # request_id=f'{task_config_list["DATAPROC_CONFIG"]["INCOMING_TO_RAW"]["SUBMIT_JOB_SPARK"]["task_id"]}',
                 dag=dag
             )
 
             delete_cluster_incoming_to_raw = DataprocDeleteClusterOperator(
-            task_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['DELETE_CLUSTER']['task_id'],
+            task_id=f'{task_config_list["DATAPROC_CONFIG"]["INCOMING_TO_RAW"]["DELETE_CLUSTER"]["task_id"]}',
             project_id=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['DELETE_CLUSTER']['project_id'],
             cluster_name=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['DELETE_CLUSTER']['cluster_name'],
             region=task_config_list['DATAPROC_CONFIG']['INCOMING_TO_RAW']['DELETE_CLUSTER']['region'],
+            # request_id=f'{task_config_list["DATAPROC_CONFIG"]["INCOMING_TO_RAW"]["DELETE_CLUSTER"]["task_id"]}',
             dag=dag
             )   
 
         with TaskGroup(group_id=f'raw_to_trusted_{table_name}') as task_group:
 
             create_cluster_raw_to_trusted = DataprocCreateClusterOperator(
-                task_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['task_id'],
+                task_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["CREATE_CLUSTER"]["task_id"]}',
                 project_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['project_id'],
                 cluster_config=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['cluster_config'],
                 region=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['region'],
+                # request_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["CREATE_CLUSTER"]["task_id"]}',
                 cluster_name= task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['CREATE_CLUSTER']['cluster_name'],
+                use_if_exists=False,
                 dag=dag
             )
 
             submit_job_spark_raw_to_trusted = DataprocSubmitJobOperator(
-                task_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['SUBMIT_JOB_SPARK']['task_id'], 
+                task_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["SUBMIT_JOB_SPARK"]["task_id"]}', 
                 job=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['SUBMIT_JOB_SPARK']['job'],
                 region=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['SUBMIT_JOB_SPARK']['region'], 
                 project_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['SUBMIT_JOB_SPARK']['project_id'],
+                # request_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["SUBMIT_JOB_SPARK"]["task_id"]}',
                 dag=dag
             )
 
             delete_cluster_raw_to_trusted = DataprocDeleteClusterOperator(
-            task_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['task_id'],
+            task_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["DELETE_CLUSTER"]["task_id"]}',
             project_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['project_id'],
             cluster_name=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['cluster_name'],
             region=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['region'],
+            # request_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["DELETE_CLUSTER"]["task_id"]}',
             dag=dag
             )   
 
