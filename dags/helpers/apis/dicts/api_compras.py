@@ -68,7 +68,7 @@ CALL_API_GOV = {
             'depends_on_past': True, # mudar isso quando tudo estiver rodando ok
         },
         'SCHEDULE_INTERVAL':'@daily',
-        'CATCHUP':True, # mudar isso quando tudo estiver rodando ok
+        'CATCHUP':False, # mudar isso quando tudo estiver rodando ok
         'TAGS':['api_gov', 'cloud-function', 'dataproc', 'bigquery']
     },
     "TASK_CONFIG":{
@@ -159,7 +159,12 @@ CALL_API_GOV = {
                     'allow_jagged_rows':False,
                     'encoding':'UTF-8',
                     'gcp_conn_id':'gcp_conn_id',
-                    'time_partitioning':None,
+                    'time_partitioning': {
+                        'field':'ingestion_date',
+                        'type':'MONTH',
+                        'expiration_ms': None,
+                        'require_partition_filter': True
+                    },
                     'cluster_fields':('secao', 'divisao'),
                     'autodetect':True,
                     'location':LOCATION,
@@ -253,7 +258,12 @@ CALL_API_GOV = {
                     'allow_jagged_rows':False,
                     'encoding':'UTF-8',
                     'gcp_conn_id':'gcp_conn_id',
-                    'time_partitioning':None,
+                    'time_partitioning': {
+                        'field':'ingestion_date',
+                        'type':'MONTH',
+                        'expiration_ms': None,
+                        'require_partition_filter': True
+                    },
                     'cluster_fields': ('uf', 'municipio'),
                     'autodetect':True,
                     'location':LOCATION,
@@ -347,7 +357,12 @@ CALL_API_GOV = {
                     'allow_jagged_rows':False,
                     'encoding':'UTF-8',
                     'gcp_conn_id':'gcp_conn_id',
-                    'time_partitioning':None,
+                    'time_partitioning': {
+                        'field':'ingestion_date',
+                        'type':'MONTH',
+                        'expiration_ms': None,
+                        'require_partition_filter': True
+                    },
                     'cluster_fields':('nome_do_orgao', 'codigo_tipo_poder'),
                     'autodetect':True,
                     'location':LOCATION,

@@ -1,5 +1,5 @@
 from datetime import datetime
-from helpers.apis.dicts.api_compras import CALL_API_GOV, TABLE_NAME_LIST, PROJECT_ID
+from helpers.apis.dicts.api_compras import CALL_API_GOV, TABLE_NAME_LIST
 
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
@@ -106,11 +106,11 @@ with DAG(
             )
 
             delete_cluster_raw_to_trusted = DataprocDeleteClusterOperator(
-            task_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["DELETE_CLUSTER"]["task_id"]}',
-            project_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['project_id'],
-            cluster_name=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['cluster_name'],
-            region=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['region'],
-            dag=dag
+                task_id=f'{task_config_list["DATAPROC_CONFIG"]["RAW_TO_TRUSTED"]["DELETE_CLUSTER"]["task_id"]}',
+                project_id=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['project_id'],
+                cluster_name=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['cluster_name'],
+                region=task_config_list['DATAPROC_CONFIG']['RAW_TO_TRUSTED']['DELETE_CLUSTER']['region'],
+                dag=dag
             )   
 
         with TaskGroup(group_id=f'trusted_to_bigquery_{table_name}') as task_group:
@@ -128,7 +128,7 @@ with DAG(
                 allow_jagged_rows = task_config_list['TRUSTED_TO_BIGQUERY']['allow_jagged_rows'] , 
                 encoding = task_config_list['TRUSTED_TO_BIGQUERY']['encoding'] , 
                 gcp_conn_id = task_config_list['TRUSTED_TO_BIGQUERY']['gcp_conn_id'] , 
-                time_partitioning = task_config_list['TRUSTED_TO_BIGQUERY']['time_partitioning'] , 
+                time_partitioning = task_config_list['TRUSTED_TO_BIGQUERY']['time_partitioning'] , #https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.table.TimePartitioning
                 cluster_fields = task_config_list['TRUSTED_TO_BIGQUERY']['cluster_fields'] , 
                 autodetect = task_config_list['TRUSTED_TO_BIGQUERY']['autodetect'] , 
                 location = task_config_list['TRUSTED_TO_BIGQUERY']['location'] , 
