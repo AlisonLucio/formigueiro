@@ -4,7 +4,7 @@ from helpers.utils.dataproc.dataproc_config import (
     get_cluster_config,
     get_job_spark
     )
-from helpers.utils.general_config import change_file_path, get_cluster_name
+from helpers.utils.general_config import change_file_path_incoming, get_cluster_name, change_file_path_raw_and_trusted
 
 
 # constantes de uso geral
@@ -28,19 +28,19 @@ API_ORGAOS='api_orgaos'
 # ----------------------------------------------------------------------------
 
 # constantes com endereços utilizados para a tabela api_servicos_orgaos
-PATH_SAVE_FILE_API_SERVICOS_ORGAOS_INCOMING=change_file_path(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
-PATH_SAVE_FILE_API_SERVICOS_ORGAOS_RAW=change_file_path(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
-PATH_SAVE_FILE_API_SERVICOS_ORGAOS_TRUSTED=change_file_path(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
+PATH_SAVE_FILE_API_SERVICOS_ORGAOS_INCOMING=change_file_path_incoming(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS, change_file_extension="csv")
+PATH_SAVE_FILE_API_SERVICOS_ORGAOS_RAW=change_file_path_raw_and_trusted(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS)
+PATH_SAVE_FILE_API_SERVICOS_ORGAOS_TRUSTED=change_file_path_raw_and_trusted(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_SERVICOS_ORGAOS)
 
 # constantes com endereços utilizados para a tabela api_orgaos
-PATH_SAVE_FILE_API_ORGAOS_INCOMING=change_file_path(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_ORGAOS, change_file_extension="csv")
-PATH_SAVE_FILE_API_ORGAOS_RAW=change_file_path(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_ORGAOS, change_file_extension="csv")
-PATH_SAVE_FILE_API_ORGAOS_TRUSTED=change_file_path(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_ORGAOS, change_file_extension="csv")
+PATH_SAVE_FILE_API_ORGAOS_INCOMING=change_file_path_incoming(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_ORGAOS, change_file_extension="csv")
+PATH_SAVE_FILE_API_ORGAOS_RAW=change_file_path_raw_and_trusted(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_ORGAOS)
+PATH_SAVE_FILE_API_ORGAOS_TRUSTED=change_file_path_raw_and_trusted(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_ORGAOS)
 
 # constantes com endereços utilizados para a tabela api_fornecedores
-PATH_SAVE_FILE_API_FORNECEDORES_INCOMING=change_file_path(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_FORNECEDORES, change_file_extension="csv")
-PATH_SAVE_FILE_API_FORNECEDORES_RAW=change_file_path(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_FORNECEDORES, change_file_extension="csv")
-PATH_SAVE_FILE_API_FORNECEDORES_TRUSTED=change_file_path(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_FORNECEDORES, change_file_extension="csv")
+PATH_SAVE_FILE_API_FORNECEDORES_INCOMING=change_file_path_incoming(change_layer=DATASET_ID_INCOMING, change_file_type="csv", change_table_name=API_FORNECEDORES, change_file_extension="csv")
+PATH_SAVE_FILE_API_FORNECEDORES_RAW=change_file_path_raw_and_trusted(change_layer=DATASET_ID_RAW, change_file_type="csv", change_table_name=API_FORNECEDORES)
+PATH_SAVE_FILE_API_FORNECEDORES_TRUSTED=change_file_path_raw_and_trusted(change_layer=DATASET_ID_TRUSTED, change_file_type="csv", change_table_name=API_FORNECEDORES)
 
 # constantes com URIs de cada api
 URI_API_SERVICOS_ORGAOS = 'http://compras.dados.gov.br/servicos/v1/servicos.csv'
@@ -109,7 +109,10 @@ CALL_API_GOV = {
                             'task_id':f'submit_job_spark_{API_SERVICOS_ORGAOS}',
                             'job': get_job_spark(project_id= PROJECT_ID, layer=DATASET_ID_INCOMING,table_name=API_SERVICOS_ORGAOS, 
                                                  pyspark_file= PYSPARK_FILE, file_origem_path= PATH_SAVE_FILE_API_SERVICOS_ORGAOS_INCOMING,
-                                                 file_destination_path=PATH_SAVE_FILE_API_SERVICOS_ORGAOS_RAW),
+                                                 file_destination_path=PATH_SAVE_FILE_API_SERVICOS_ORGAOS_RAW, \
+                                                 app_name=f'incoming_to_raw_{API_SERVICOS_ORGAOS}', change_source_type='api', \
+                                                 change_file_type='csv', change_table_name=API_SERVICOS_ORGAOS
+                                                 ),
                             'region':LOCATION,
                             'project_id':PROJECT_ID
                         },
@@ -132,7 +135,8 @@ CALL_API_GOV = {
                             'task_id':f'submit_job_spark_{API_SERVICOS_ORGAOS}',
                             'job': get_job_spark(project_id= PROJECT_ID, layer=DATASET_ID_RAW,table_name=API_SERVICOS_ORGAOS, 
                                                  pyspark_file= PYSPARK_FILE, file_origem_path= PATH_SAVE_FILE_API_SERVICOS_ORGAOS_RAW,
-                                                 file_destination_path=PATH_SAVE_FILE_API_SERVICOS_ORGAOS_TRUSTED),
+                                                 file_destination_path=PATH_SAVE_FILE_API_SERVICOS_ORGAOS_TRUSTED,
+                                                 app_name=f'raw_to_trusted_{API_SERVICOS_ORGAOS}'),
                             'region':LOCATION,
                             'project_id':PROJECT_ID
                         },
@@ -208,7 +212,10 @@ CALL_API_GOV = {
                             'task_id':f'submit_job_spark_{API_FORNECEDORES}',
                             'job': get_job_spark(project_id= PROJECT_ID, layer=DATASET_ID_INCOMING,table_name=API_FORNECEDORES, 
                                                  pyspark_file= PYSPARK_FILE, file_origem_path= PATH_SAVE_FILE_API_FORNECEDORES_INCOMING,
-                                                 file_destination_path=PATH_SAVE_FILE_API_FORNECEDORES_RAW),
+                                                 file_destination_path=PATH_SAVE_FILE_API_FORNECEDORES_RAW, \
+                                                 app_name=f'incoming_to_raw_{API_FORNECEDORES}', change_source_type='api', \
+                                                 change_file_type='csv', change_table_name=API_FORNECEDORES
+                                                 ),
                             'region':LOCATION,
                             'project_id':PROJECT_ID
                         },
@@ -231,7 +238,8 @@ CALL_API_GOV = {
                             'task_id':f'submit_job_spark_{API_FORNECEDORES}',
                             'job': get_job_spark(project_id= PROJECT_ID, layer=DATASET_ID_RAW,table_name=API_FORNECEDORES, 
                                                  pyspark_file= PYSPARK_FILE, file_origem_path= PATH_SAVE_FILE_API_FORNECEDORES_RAW,
-                                                 file_destination_path=PATH_SAVE_FILE_API_FORNECEDORES_TRUSTED),
+                                                 file_destination_path=PATH_SAVE_FILE_API_FORNECEDORES_TRUSTED,\
+                                                 app_name=f'raw_to_trusted_{API_FORNECEDORES}'),
                             'region':LOCATION,
                             'project_id':PROJECT_ID
                         },
@@ -307,7 +315,10 @@ CALL_API_GOV = {
                             'task_id':f'submit_job_spark_{API_ORGAOS}',
                             'job': get_job_spark(project_id= PROJECT_ID, layer=DATASET_ID_INCOMING,table_name=API_ORGAOS, 
                                                  pyspark_file= PYSPARK_FILE, file_origem_path= PATH_SAVE_FILE_API_ORGAOS_INCOMING,
-                                                 file_destination_path=PATH_SAVE_FILE_API_ORGAOS_RAW),
+                                                 file_destination_path=PATH_SAVE_FILE_API_ORGAOS_RAW, \
+                                                 app_name=f'incoming_to_raw_{API_ORGAOS}', change_source_type='api', \
+                                                 change_file_type='csv', change_table_name=API_ORGAOS
+                                                 ),
                             'region':LOCATION,
                             'project_id':PROJECT_ID
                         },
@@ -330,7 +341,8 @@ CALL_API_GOV = {
                             'task_id':f'submit_job_spark_{API_ORGAOS}',
                             'job': get_job_spark(project_id= PROJECT_ID, layer=DATASET_ID_RAW,table_name=API_ORGAOS, 
                                                  pyspark_file= PYSPARK_FILE, file_origem_path= PATH_SAVE_FILE_API_ORGAOS_RAW,
-                                                 file_destination_path=PATH_SAVE_FILE_API_ORGAOS_TRUSTED),
+                                                 file_destination_path=PATH_SAVE_FILE_API_ORGAOS_TRUSTED,\
+                                                 app_name=f'raw_to_trusted_{API_ORGAOS}'),
                             'region':LOCATION,
                             'project_id':PROJECT_ID
                         },
