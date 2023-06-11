@@ -59,19 +59,18 @@ def func_run():
         df_incoming_hash = df.withColumn("checksum", F.xxhash64(*df.schema.names))
 
         try:
-            # pegar checksum já existentes na raw
-            # o checksum não pode estar atrelado a data de ingestão, se isso ocorrer a cada dia que o workflow rodar vai gerar uma nova data 
-            # e consequentemente um novo hash. 
-            # por isso devo primeiro gerar o hash e só depois adicionar a coluna com a data de engestão
-            df_raw = spark.read.options(header='True', delimiter=",", inferSchema='False', encoding='UTF-8').csv(CHECK_RAW_PATH).select(F.col('checksum'))
-            
-            df_join = df_incoming_hash.join(df_raw, df_incoming_hash.checksum.cast('string') == df_raw.checksum.cast('string'), 'leftanti')\
-                .drop(df_raw.checksum).withColumn("ingestion_date", F.current_date().cast(DateType()))
-            
-            df_join.write.mode("overwrite").options(header="True", inferSchema="False", delimiter=",").csv(GCP_DATA_OUTPUT_PATH)
+        # pegar checksum já existentes na raw
+        # o checksum não pode estar atrelado a data de ingestão, se isso ocorrer a cada dia que o workflow rodar vai gerar uma nova data 
+        # e consequentemente um novo hash. 
+        # por isso devo primeiro gerar o hash e só depois adicionar a coluna com a data de engestão
+            list_checksum_raw = spark.read.options(header='True', delimiter=",", inferSchema='True', encoding='UTF-8')\
+                .csv(CHECK_RAW_PATH).select(F.col('checksum')).rdd.flatMap(lambda x: x).collect()
 
-            print_info('Já havia arquivos em raw para esta partição --- ', df_join)
+            df_save = df_incoming_hash.filter(df_incoming_hash.checksum.isin(list_checksum_raw) == False) \
+                .withColumn("ingestion_date", F.current_date().cast(DateType()))
 
+            df_save.write.mode("overwrite").options(header="True", inferSchema="False", delimiter=",").csv(GCP_DATA_OUTPUT_PATH)
+            print_info('Já havia arquivos em raw para esta partição --- ', df_save)
         except:
             df_save = df_incoming_hash.withColumn("ingestion_date", F.current_date().cast(DateType()))
 

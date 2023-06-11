@@ -1,16 +1,34 @@
-def change_file_path_incoming(change_layer:str, change_file_type:str, change_table_name:str, change_file_extension:str=None):
-    return f'layer_{change_layer}/source_type_api/file_type_{change_file_type}/{change_table_name}/'\
-            'prefdate={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%Y%m%d")}}/'\
-           f'{change_table_name}.{change_file_extension}' 
+class PathsDataLake:
+    def __init__(self, change_file_type:str, change_table_name:str, change_source_type:str='api',
+                 flow_technology:str = 'dataproc', change_file_extension:str=None):
+        
+        self.change_file_type=change_file_type
+        self.change_table_name=change_table_name
+        self.change_source_type=change_source_type
+        self.flow_technology = flow_technology
+        self.change_file_extension =change_file_extension
 
-def change_file_path_raw_and_trusted(change_layer:str, change_file_type:str, change_table_name:str):
-    return f'layer_{change_layer}/source_type_api/file_type_{change_file_type}/{change_table_name}/'\
-            'prefdate={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%Y%m%d")}}/'\
-           f'{change_table_name}' 
+    def __path_file(self, change_layer):
+        return f'layer_{change_layer}/source_type_{self.change_source_type}/flow_technology_{self.flow_technology}'\
+               f'/file_type_{self.change_file_type}/{self.change_table_name}/'
 
-def get_file_check_path(change_source_type:str, change_file_type:str, change_table_name:str):
-    return f'layer_raw/source_type_{change_source_type}/file_type_{change_file_type}/{change_table_name}/'\
-           f'prefdate=*/{change_table_name}/*.csv'
+    def change_file_path(self, change_layer):
+        if self.flow_technology == 'dataproc':
+
+            return f'{self.__path_file(change_layer=change_layer)}'\
+                    'prefdate={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%Y%m%d")}}/'\
+                   f'{self.change_table_name}.{self.change_file_extension}' 
+        
+        elif self.flow_technology == 'bigquery':
+            return f'{self.__path_file(change_layer=change_layer)}'\
+                    'year={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%Y")}}/'\
+                    'mounth={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%m")}}/'\
+                    'day={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%d")}}/'\
+                    'prefdate={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%Y%m%d")}}/'\
+                   f'{self.change_table_name}.{self.change_file_extension}'
+
+    def get_file_check_path(self,change_layer:str):
+        return f'{self.__path_file(change_layer=change_layer)}prefdate=*/*.csv'
 
 
 def get_cluster_name(project_id : str, layer:str, table_name:str):

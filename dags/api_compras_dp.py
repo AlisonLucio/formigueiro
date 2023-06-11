@@ -1,5 +1,5 @@
 from datetime import datetime
-from helpers.apis.dicts.api_compras import CALL_API_GOV, TABLE_NAME_LIST
+from helpers.apis.dicts.api_compras_dp import CALL_API_GOV, TABLE_NAME_LIST
 
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
@@ -12,9 +12,7 @@ from airflow.providers.google.cloud.operators.dataproc import (
     DataprocSubmitJobOperator
     )
 from airflow.utils.task_group import TaskGroup
-from random import seed, randint
 
-seed(2)
 
 dag_conf= CALL_API_GOV['DAG_CONFIG']
 
@@ -34,8 +32,6 @@ with DAG(
     for table_name in TABLE_NAME_LIST:
 
         task_config_list= CALL_API_GOV['TASK_CONFIG']['PIPELINES_TABLES'][table_name]
-
-        aleatorio = randint(0, 15)
 
         with TaskGroup(group_id=f'extration_api_{table_name}') as task_group:
             task_delete_file_incoming = GoogleCloudStorageDeleteOperator(
@@ -114,6 +110,7 @@ with DAG(
             )   
 
         with TaskGroup(group_id=f'trusted_to_bigquery_{table_name}') as task_group:
+
             task_trusted_to_bigquery = GCSToBigQueryOperator(
                 task_id=task_config_list['TRUSTED_TO_BIGQUERY']['task_id'],
                 bucket=task_config_list['TRUSTED_TO_BIGQUERY']['bucket'] , 
