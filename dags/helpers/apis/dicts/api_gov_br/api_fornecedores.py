@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 from airflow.models import Variable
 from helpers.utils.dataproc.dataproc_config import (
     get_cluster_config
@@ -16,7 +15,7 @@ LOCATION="us-central1"
 SERVICE_ACCOUNT=Variable.get('SERVICE_ACCOUNT')
 GCP_CONN_ID= 'gcp_conn_id'
 GOOGLE_CLOUD_DEFAULT='google_cloud_default'
-PYSPARK_FILE='gs://video-aulas-ed/script_submit_spark/layer_incoming/source_type_api/api_fornecedores/submit_file_config.py'
+PYSPARK_FILE='gs://video-aulas-ed/script_submit_spark/submit_file_config.py'
 DEFAULT_RETRY=4
 # ----------------------------------------------------------------------------
 
