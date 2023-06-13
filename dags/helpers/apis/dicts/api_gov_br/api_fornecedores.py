@@ -3,7 +3,7 @@ from airflow.models import Variable
 from helpers.utils.dataproc.dataproc_config import (
     get_cluster_config
     )
-from helpers.utils.general_config import PathsDataLake, get_cluster_name
+from helpers.utils.general_config import PathsDataLake
 
 
 # constantes de uso geral
@@ -21,7 +21,7 @@ DEFAULT_RETRY=4
 # ----------------------------------------------------------------------------
 
 # constantes com os nomes das tabela
-TABLE='api_fornecedores'
+TABLE='api-fornecedores'
 
 # ----------------------------------------------------------------------------
 
@@ -40,8 +40,8 @@ PATH_SAVE_FILE_TABLE_TRUSTED=path_dl.change_file_path(change_layer=DATASET_ID_TR
 
 
 # nomes de clusters 
-CLUSTER_NAME_INCOMING = get_cluster_name(project_id=PROJECT_ID, layer=DATASET_ID_INCOMING, table_name=TABLE)
-CLUSTER_NAME_RAW = get_cluster_name(project_id=PROJECT_ID, layer=DATASET_ID_RAW, table_name=TABLE)
+CLUSTER_NAME_INCOMING = path_dl.get_cluster_name(project_id=PROJECT_ID, layer=DATASET_ID_INCOMING)
+CLUSTER_NAME_RAW = path_dl.get_cluster_name(project_id=PROJECT_ID, layer=DATASET_ID_RAW)
 
 # ----------------------------------------------------------------------------
 
