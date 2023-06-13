@@ -31,5 +31,7 @@ class PathsDataLake:
         return f'{self.__path_file(change_layer=change_layer)}prefdate=*/*.csv'
 
 
-def get_cluster_name(project_id : str, layer:str, table_name:str):
-    return f'{project_id}.{layer}.{table_name}'.replace('_', '-').replace('.','-')
+    def get_cluster_name(self, project_id : str, layer:str):
+        return f'{project_id}.{layer}.{self.change_table_name}-'\
+            '{{ds_nodash}}'\
+            .replace('.','-')

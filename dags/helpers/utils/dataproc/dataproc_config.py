@@ -1,4 +1,3 @@
-from helpers.utils.general_config import get_cluster_name
 from helpers.utils.general_config import PathsDataLake
 
 def get_cluster_config():
