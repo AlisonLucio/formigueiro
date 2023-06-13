@@ -4,13 +4,14 @@ import sys
 import pandas as pd
 from functools import reduce
 import pyspark.sql.functions as F
-from pyspark.sql.types import StructType, StringType, DateType
+from pyspark.sql.types import StringType, DateType
 
 
 
 GCS_DATA_SOURCE_PATH=sys.argv[1]
 GCP_DATA_OUTPUT_PATH=sys.argv[2]
 APP_NAME=sys.argv[3]
+CHECK_RAW_PATH=sys.argv[4]
 
 print('-------------------------------------------------------------------------')
 print(f'GCS_DATA_SOURCE_PATH ===  {GCS_DATA_SOURCE_PATH}')
@@ -53,28 +54,23 @@ def func_run():
     
     if 'layer_incoming' in GCS_DATA_SOURCE_PATH and 'layer_raw' in GCP_DATA_OUTPUT_PATH:
 
-        schema = StructType().add("checksum", StringType(), False)
-
-        df = spark.read.options(header='True', delimiter=",", inferSchema='False', encoding='UTF-8')\
-            .csv(GCS_DATA_SOURCE_PATH)
-        
+        df = spark.read.options(header='True', delimiter=",", inferSchema='False', encoding='UTF-8').csv(GCS_DATA_SOURCE_PATH)
+            
         df_incoming_hash = df.withColumn("checksum", F.xxhash64(*df.schema.names))
 
         try:
-            # pegar checksum já existentes na raw
-            # o checksum não pode estar atrelado a data de ingestão, se isso ocorrer a cada dia que o workflow rodar vai gerar uma nova data 
-            # e consequentemente um novo hash. 
-            # por isso devo primeiro gerar o hash e só depois adicionar a coluna com a data de engestão
-            df_raw = spark.read.options(header='True', delimiter=",", inferSchema='False', encoding='UTF-8')\
-                .schema(schema).csv(GCP_DATA_OUTPUT_PATH).select(F.col('checksum'))
-            
-            df_join = df_incoming_hash.join(df_raw, df_incoming_hash.checksum == df_raw.checksum, 'leftanti')\
-                .drop(df_raw.checksum).withColumn("ingestion_date", F.current_date().cast(DateType()))
-            
-            df_join.write.mode("overwrite").options(header="True", inferSchema="False", delimiter=",").csv(GCP_DATA_OUTPUT_PATH)
+        # pegar checksum já existentes na raw
+        # o checksum não pode estar atrelado a data de ingestão, se isso ocorrer a cada dia que o workflow rodar vai gerar uma nova data 
+        # e consequentemente um novo hash. 
+        # por isso devo primeiro gerar o hash e só depois adicionar a coluna com a data de engestão
+            list_checksum_raw = spark.read.options(header='True', delimiter=",", inferSchema='True', encoding='UTF-8')\
+                .csv(CHECK_RAW_PATH).select(F.col('checksum')).rdd.flatMap(lambda x: x).collect()
 
-            print_info('Já havia arquivos em raw para esta partição --- ', df_join)
+            df_save = df_incoming_hash.filter(df_incoming_hash.checksum.isin(list_checksum_raw) == False) \
+                .withColumn("ingestion_date", F.current_date().cast(DateType()))
 
+            df_save.write.mode("overwrite").options(header="True", inferSchema="False", delimiter=",").csv(GCP_DATA_OUTPUT_PATH)
+            print_info('Já havia arquivos em raw para esta partição --- ', df_save)
         except:
             df_save = df_incoming_hash.withColumn("ingestion_date", F.current_date().cast(DateType()))
 
@@ -83,6 +79,7 @@ def func_run():
             print_info('Não havia arquivos em raw para esta partição. Estes foram os primeiros --- ', df_save)
     
     else: 
+        # raw_to_trusted
         convertUDF = F.udf(lambda z: funcao_normalizar(z), StringType())
 
         df = spark.read.options(header='True', delimiter=",", inferSchema='True', encoding='UTF-8', escape='\\').csv(GCS_DATA_SOURCE_PATH)
@@ -90,9 +87,10 @@ def func_run():
         new_names=[]
         old_columns = df.schema.names
         for old in old_columns:
-             new_names.append(old.lower().replace(" ", '_').replace('ç','c').replace('á','a')\
-                                         .replace('ã','a').replace('é','e').replace('í','i')\
-                                         .replace('ó','o').replace('õ','o').replace('ú','u'))
+             new_names.append(old.lower()\
+                              .replace(" ", '_').replace('ç','c').replace('á','a')\
+                              .replace('ã','a').replace('é','e').replace('í','i')\
+                              .replace('ó','o').replace('õ','o').replace('ú','u'))
 
         df = reduce(lambda df, idx: df.withColumnRenamed(old_columns[idx], new_names[idx]), range(len(old_columns)), df)
         df = reduce(lambda df, idx: df.withColumn(new_names[idx], convertUDF(F.col(new_names[idx]))), range(len(new_names)), df)
