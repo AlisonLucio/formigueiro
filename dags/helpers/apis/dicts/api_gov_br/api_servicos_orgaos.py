@@ -50,6 +50,11 @@ URI_TABLE    = 'http://compras.dados.gov.br/servicos/v1/servicos.csv'
 
 # ----------------------------------------------------------------------------
 
+# configurações para o operador bigquery
+CLUSTER_FIELDS = 'grupo', 'subclasse'
+
+# ----------------------------------------------------------------------------
+
 TASK_CONFIG = {
     "ZONE":LOCATION,
     "TABLE_NAME":TABLE,
@@ -163,7 +168,7 @@ TASK_CONFIG = {
             'expiration_ms': None,
             'require_partition_filter': True
         },
-        'cluster_fields': ('uf', 'municipio'),
+        'cluster_fields': (CLUSTER_FIELDS),
         'autodetect':True,
         'location':LOCATION,
         'impersonation_chain':SERVICE_ACCOUNT,
