@@ -14,7 +14,7 @@ CALL_API_GOV = {
             'retries': 4,
             'retry_delay': timedelta(seconds=120),
             'wait_for_downstream': False,
-            'depends_on_past': True, # mudar isso quando tudo estiver rodando ok
+            'depends_on_past': False, # mudar isso quando tudo estiver rodando ok
         },
         'SCHEDULE_INTERVAL':'@daily',
         'CATCHUP':True, # mudar isso quando tudo estiver rodando ok
