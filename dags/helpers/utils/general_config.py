@@ -19,13 +19,12 @@ class PathsDataLake:
                     'prefdate={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%Y%m%d")}}/'\
                    f'{self.change_table_name}.{self.change_file_extension}' 
         
-        elif self.flow_technology == 'bigquery':
+        elif self.flow_technology == 'gcs_operator':
             return f'{self.__path_file(change_layer=change_layer)}'\
                     'year={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%Y")}}/'\
                     'mounth={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%m")}}/'\
                     'day={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%d")}}/'\
-                    'prefdate={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%Y%m%d")}}/'\
-                   f'{self.change_table_name}.{self.change_file_extension}'
+                    'prefdate={{macros.datetime.strptime(ts_nodash, "%Y%m%dT%H%M%S").strftime("%Y%m%d")}}/'
 
     def get_file_check_path(self,change_layer:str):
         return f'{self.__path_file(change_layer=change_layer)}prefdate=*/*.csv'
