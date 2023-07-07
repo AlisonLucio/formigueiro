@@ -1,9 +1,14 @@
-- name: gcr.io/cloud-builders/docker
-  id: Builders
-    args:
-      - beta
-      - builds
-      - triggers
-      - run
-      - th-cb-test-dest
-      - --branch=main
+steps:
+  # install dependencies
+  - name: python:3.8-slim
+    entrypoint: pip
+    args: ["install", "-r", "requirements.txt", "-c", "constraints.txt", "--user"]
+
+  - name: python:3.8-slim
+    entrypoint: pip
+    args: ["install", "-r", "requirements-test.txt", "--user"]
+
+  # run in python 3.8 which is latest version in Cloud Composer
+  - name: python:3.8-slim
+    entrypoint: python3.8
+    args: ["-m", "pytest", "-s", "dags/tests"]
