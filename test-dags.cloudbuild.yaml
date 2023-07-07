@@ -1,11 +1,4 @@
 steps:
-  - name: gcr.io/cloud-builders/docker
-  id: Push Image to GCR
-  args: [
-    'push',
-    'gcr.io/$PROJECT_ID/airflow-data-pipeline:latest'
-  ]
-
   # install dependencies
   - name: python:3.8-slim
     entrypoint: pip
