@@ -11,7 +11,7 @@ steps:
   # run in python 3.8 which is latest version in Cloud Composer
   - name: python:3.8-slim
     entrypoint: python3.8
-    args: ["-m", "pytest", "-s", "dags/tests"]
+    args: ["-m", "pytest", "-s", "--with-db-init", "dags/tests"]
 
 options:
   logging: CLOUD_LOGGING_ONLY
