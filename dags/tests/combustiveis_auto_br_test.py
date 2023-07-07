@@ -1,5 +1,4 @@
 import pytest
-from helpers.apis.dicts.api_gov_br.base import DAG_CONFIG
 
 from airflow.models import DagBag
 
@@ -10,7 +9,7 @@ def dagbag():
 
 
 def test_dag_loaded(dagbag):
-    dag = dagbag.get_dag(dag_id=DAG_CONFIG)
+    dag = dagbag.get_dag(dag_id='postgresql_combustiveis_br')
     assert dagbag.import_errors == {}
     assert dag is not None
     assert len(dag.tasks) == 1
