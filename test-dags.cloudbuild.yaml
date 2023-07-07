@@ -9,8 +9,8 @@ steps:
     args: ["install", "-r", "requirements-test.txt", "--user"]
 
   - name: python:3.8-slim
-  entrypoint: airflow
-  args: ["initdb"]
+    entrypoint: airflow
+    args: ["initdb"]
 
   # run in python 3.8 which is latest version in Cloud Composer
   - name: python:3.8-slim
