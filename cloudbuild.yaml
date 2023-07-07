@@ -1,9 +1,9 @@
 - name: gcr.io/cloud-builders/docker
-id: Builders
-args:[
-  'build',
-  '-t',
-  'gcr.io/$PROJECT_ID/airflow-data-pipeline',
-  '--cache-from', 'gcr.io/$PROJECT_ID/airflow-data-pipeline:latest',
-  './'
-]
+  id: Builders
+  args:[
+      'build',
+      '-t',
+      'gcr.io/$PROJECT_ID/airflow-data-pipeline',
+      '--cache-from', 'gcr.io/$PROJECT_ID/airflow-data-pipeline:latest',
+      './'
+  ]
