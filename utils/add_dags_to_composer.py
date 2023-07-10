@@ -97,5 +97,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    upload_dags_to_composer(args.dags_directory, args.dags_bucket)
+    upload_dags_to_composer(args.dags_directory, args.dags_bucket, name_replacement='helpers/*')
 # [END composer_cicd_add_dags_to_composer_utility]
