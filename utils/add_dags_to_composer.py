@@ -52,6 +52,7 @@ def upload_dags_to_composer(
         bucket_name (str): the GCS bucket of the Cloud Composer environment to upload DAGs to
         name_replacement (str, optional): the name of the "dags/" subdirectory that will be used when constructing the temporary directory path name Defaults to "dags/".
     """
+    print(f'FFFFFFFFF = {dags_directory}')
     temp_dir, dags = _create_dags_list(dags_directory)
 
     if len(dags) > 0:
@@ -97,5 +98,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    upload_dags_to_composer(args.dags_directory, args.dags_bucket, name_replacement='helpers/*')
+    upload_dags_to_composer(args.dags_directory, args.dags_bucket)
 # [END composer_cicd_add_dags_to_composer_utility]
