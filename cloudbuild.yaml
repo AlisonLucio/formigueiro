@@ -17,3 +17,5 @@ steps:
     - '-r'
     - 'README.md'
     - 'gs://${_GCS_BUCKET}/README.md'
+options:
+  logging: CLOUD_LOGGING_ONLY
