@@ -1,18 +1,3 @@
-# Copyright 2021 Google LLC
-
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-
-#     https://www.apache.org/licenses/LICENSE-2.0
-
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# [START composer_cicd_add_dags_to_composer_utility]
 from __future__ import annotations
 
 import argparse
@@ -23,7 +8,6 @@ import tempfile
 
 # Imports the Google Cloud client library
 from google.cloud import storage
-
 
 def _create_dags_list(dags_directory: str) -> tuple[str, list[str]]:
     temp_dir = tempfile.mkdtemp()
@@ -39,7 +23,6 @@ def _create_dags_list(dags_directory: str) -> tuple[str, list[str]]:
     dags = glob.glob(f"{temp_dir}/*.py")
     return (temp_dir, dags)
 
-
 def upload_dags_to_composer(
     dags_directory: str, bucket_name: str, name_replacement: str = "dags/"
 ) -> None:
@@ -52,7 +35,6 @@ def upload_dags_to_composer(
         bucket_name (str): the GCS bucket of the Cloud Composer environment to upload DAGs to
         name_replacement (str, optional): the name of the "dags/" subdirectory that will be used when constructing the temporary directory path name Defaults to "dags/".
     """
-    print(f'FFFFFFFFF = {dags_directory}')
     temp_dir, dags = _create_dags_list(dags_directory)
 
     if len(dags) > 0:
@@ -82,7 +64,6 @@ def upload_dags_to_composer(
     else:
         print("No DAGs to upload.")
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -99,4 +80,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     upload_dags_to_composer(args.dags_directory, args.dags_bucket)
-# [END composer_cicd_add_dags_to_composer_utility]
