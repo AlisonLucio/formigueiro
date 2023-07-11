@@ -15,7 +15,7 @@ CALL_API_GOV = {
             'wait_for_downstream': True,
             'depends_on_past': True, # mudar isso quando tudo estiver rodando ok
         },
-        'SCHEDULE_INTERVAL':'* 5 1-31 1-12 *',
+        'SCHEDULE_INTERVAL':'00 08 1-31 1-12 *',
         'CATCHUP':True, # mudar isso quando tudo estiver rodando ok
         'TAGS':['api_gov', 'cloud-function', 'dataproc', 'bigquery']
     },
