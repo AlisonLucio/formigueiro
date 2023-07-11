@@ -1,4 +1,0 @@
-pytest==7.0.1
-kubernetes==23.6.0
-apache-airflow-providers-http==1.0.0
-cloud-composer-dag-test-utils==1.0.0
