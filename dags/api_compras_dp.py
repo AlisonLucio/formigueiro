@@ -140,6 +140,7 @@ with DAG(
                 location = task_config['TRUSTED_TO_BIGQUERY']['location'] , 
                 impersonation_chain = task_config['TRUSTED_TO_BIGQUERY']['impersonation_chain'] , 
                 result_timeout = task_config['TRUSTED_TO_BIGQUERY']['result_timeout'] , 
+                depends_on_past=False,
                 dag=dag
             )
 
