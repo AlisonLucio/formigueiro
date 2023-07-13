@@ -29,6 +29,11 @@ path_dl = PathsDataLake(change_file_type='csv', change_table_name=TABLE, change_
 
 # ----------------------------------------------------------------------------
 
+# ----------------------------------------------------------------------------
+cluster_config = 'medium'
+
+# ----------------------------------------------------------------------------
+
 
 # constantes com endereços utilizados para a tabela api_fornecedores
 PATH_SAVE_FILE_TABLE_INCOMING=path_dl.change_file_path(change_layer=DATASET_ID_INCOMING)
@@ -83,7 +88,7 @@ TASK_CONFIG = {
             'CREATE_CLUSTER':{
                 'task_id':f'incoming_create_cluster_{TABLE}',
                 'project_id':PROJECT_ID,
-                'cluster_config': get_cluster_config(),
+                'cluster_config': get_cluster_config(cluster_config),
                 'region':LOCATION,
                 'cluster_name':CLUSTER_NAME_INCOMING
             },
@@ -116,7 +121,7 @@ TASK_CONFIG = {
             'CREATE_CLUSTER':{
                 'task_id':f'raw_create_cluster_{TABLE}',
                 'project_id':PROJECT_ID,
-                'cluster_config': get_cluster_config(),
+                'cluster_config': get_cluster_config(cluster_config),
                 'region':LOCATION,
                 'cluster_name':CLUSTER_NAME_RAW
             },
